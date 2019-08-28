@@ -75,9 +75,9 @@ void init_grid(neil_geometry *geom, Shader prog){
     glGenVertexArrays(1, &geom->VAO);
     prog.use();
 
-    int rows = 100;
-    int cols = 100;
-    float squareSize = 0.5f;
+    const int rows = 50;
+    const int cols = 100;
+    float squareSize = 0.3f;
     int arrIndex;
 
     // set up vertices
@@ -91,6 +91,26 @@ void init_grid(neil_geometry *geom, Shader prog){
         }
     }
     geom_attr(geom, data, geom->attribute[0], prog.getAttribLoc("in_pos"), 3, rows*cols);
+
+    // set up texture coordinates
+    GLfloat texCoords[rows*cols*2];
+    for(int i = 0; i < rows; i += 1){
+        for (int j = 0; j < cols; j += 1){
+            arrIndex = (i*cols*2) + (j*2);
+            texCoords[arrIndex] = (float)j/(cols-1);
+            texCoords[arrIndex+1] = (float)i/(rows-1);
+        }
+    }
+    geom_attr(geom, texCoords, geom->attribute[1], prog.getAttribLoc("in_tex"), 2, rows*cols); 
+    // prog.setInt("texture1", geom->texture_count);
+    // geom_texture(&geom->texture[geom->texture_count++], "../images/height.png", 0, 0);
+
+    prog.setInt("texture2", geom->texture_count);
+    geom_texture(&geom->texture[geom->texture_count++], "../images/terrain.jpg", 0, 0);
+    for(int i = 0; i < geom->texture_count; i += 1){
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, geom->texture[i]);
+    }
 
     // set up indices
     GLint indices[3 * (rows-1) * (cols-1)];
@@ -125,7 +145,7 @@ int main(){
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    Shader shader("triangle.vert", "triangle.frag");
+    Shader shader("grid.vert", "grid.frag");
     init_grid(&grid, shader);
 
     /***************************************************************************
