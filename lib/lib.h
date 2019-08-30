@@ -18,7 +18,7 @@ void mouse_callback(GLFWwindow*, double, double);
 void scroll_callback(GLFWwindow*, double, double);
 GLFWwindow* init(float, float);
 void framebuffer_size_callback(GLFWwindow*, int, int);
-void geom_texture(GLuint *, const char *, int, int);
+void geom_texture(GLuint *, const char *, GLenum, GLenum, int);
 void geom_attr(neil_geometry *, GLfloat *, GLuint, GLint, GLint, GLint);
 void geom_indices(neil_geometry *, GLint *, GLint, GLint);
 

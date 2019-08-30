@@ -11,6 +11,7 @@
 #include "../lib/program.h"
 #include "../lib/lib.h"
 #include "../lib/camera.h"
+#include "../lib/neil_math.h"
 
 GLFWwindow *window;
 #define screenWidth 1920.0f
@@ -75,9 +76,9 @@ void init_grid(neil_geometry *geom, Shader prog){
     glGenVertexArrays(1, &geom->VAO);
     prog.use();
 
-    const int rows = 50;
-    const int cols = 100;
-    float squareSize = 0.3f;
+    const int rows = 200;
+    const int cols = 400;
+    float squareSize = 0.1f;
     int arrIndex;
 
     // set up vertices
@@ -102,11 +103,13 @@ void init_grid(neil_geometry *geom, Shader prog){
         }
     }
     geom_attr(geom, texCoords, geom->attribute[1], prog.getAttribLoc("in_tex"), 2, rows*cols); 
-    // prog.setInt("texture1", geom->texture_count);
-    // geom_texture(&geom->texture[geom->texture_count++], "../images/height.png", 0, 0);
+
+    prog.setInt("texture1", geom->texture_count);
+    geom_texture(&geom->texture[geom->texture_count++], "../images/height2.png", GL_RGBA8, GL_RGBA, 0);
 
     prog.setInt("texture2", geom->texture_count);
-    geom_texture(&geom->texture[geom->texture_count++], "../images/terrain.jpg", 0, 0);
+    geom_texture(&geom->texture[geom->texture_count++], "../images/terrain.jpg", GL_RGB, GL_RGB, 0);
+
     for(int i = 0; i < geom->texture_count; i += 1){
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, geom->texture[i]);
@@ -154,6 +157,8 @@ int main(){
 
     glEnable(GL_DEPTH_TEST);
 
+    Mat4 mat(1.0);
+    mat.show();
     while(!glfwWindowShouldClose(window)){
         // render
         glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
@@ -162,7 +167,8 @@ int main(){
         // input
         processInput(window);
 
-        glm::mat4 model = glm::mat4(1.0f);
+        // glm::mat4 model = glm::mat4(1.0f);
+        Mat4 model = Mat4(1.0f);
         glm::mat4 view = camera.getView();
         glm::mat4 projection = glm::perspective(glm::radians(fov), 
                                     screenWidth/screenHeight, 

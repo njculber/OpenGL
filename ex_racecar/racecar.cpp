@@ -11,6 +11,7 @@
 #include "../lib/program.h"
 #include "../lib/lib.h"
 #include "../lib/camera.h"
+#include "../lib/neil_math.h"
 
 GLFWwindow *window;
 #define screenWidth 640.0f
@@ -175,10 +176,10 @@ void init_cube(neil_geometry *geom, Shader prog){
     geom_attr(geom, tex, geom->attribute[2], prog.getAttribLoc("texCoordIn"), 2, 4*6);
 
     prog.setInt("texture1", geom->texture_count);
-    geom_texture(&geom->texture[geom->texture_count++], "../images/container.jpg", 0, 0);
+    geom_texture(&geom->texture[geom->texture_count++], "../images/container.jpg", GL_RGBA8, GL_RGBA, 0);
 
     prog.setInt("texture2", geom->texture_count);
-    geom_texture(&geom->texture[geom->texture_count++], "../images/awesomeface.png", 1, 1);
+    geom_texture(&geom->texture[geom->texture_count++], "../images/awesomeface.png", GL_RGBA8, GL_RGBA, 1);
 
     for(int i = 0; i < geom->texture_count; i += 1){
         glActiveTexture(GL_TEXTURE0 + i);

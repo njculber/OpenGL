@@ -1,5 +1,5 @@
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef PROGRAM_H
+#define PROGRAM_H
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "../lib/neil_math.h"
 
 class Shader{
 public:
@@ -21,6 +22,7 @@ public:
 	void setVec3f(const char *, float, float, float);
 	void setVec3f(const char *, glm::vec3);
 	void setMat4(const char *, glm::mat4);
+	void setMat4(const char *, Mat4);
 	GLint getAttribLoc(const char *);
 };
 

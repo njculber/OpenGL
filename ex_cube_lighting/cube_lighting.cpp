@@ -11,6 +11,7 @@
 #include "../lib/program.h"
 #include "../lib/lib.h"
 #include "../lib/camera.h"
+#include "../lib/neil_math.h"
 
 GLFWwindow *window;
 #define screenWidth 640.0f

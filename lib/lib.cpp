@@ -41,7 +41,7 @@ void geom_indices(neil_geometry *geom, GLint *data, GLint components, GLint edge
 *                                                                                        *
 ******************************************************************************************/
 
-void geom_texture(GLuint *texture, const char * file, int type, int flipped){
+void geom_texture(GLuint *texture, const char * file, GLenum internalFormat, GLenum format, int flipped){
     GLuint tex = 0;
     glGenTextures(1, &tex);
     glBindTexture(GL_TEXTURE_2D, tex);
@@ -52,14 +52,13 @@ void geom_texture(GLuint *texture, const char * file, int type, int flipped){
 
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(flipped);
-    unsigned char *data = stbi_load(file, &width, &height, &nrChannels, 0);
+    unsigned char *data;
+    GLenum type = GL_RGB;
+    if(type == format) data = stbi_load(file, &width, &height, &nrChannels, 0);
+    else data = stbi_load(file, &width, &height, &nrChannels, STBI_rgb_alpha);
 
-    if(data && type == 0){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else if(data && type == 1){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    if(data){
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else{

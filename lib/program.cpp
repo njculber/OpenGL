@@ -108,6 +108,12 @@ void Shader::setMat4(const char *uni, glm::mat4 mat){
     glUniformMatrix4fv(matLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
+void Shader::setMat4(const char *uni, Mat4 mat){
+    unsigned int matLoc = glGetUniformLocation(ID, uni);
+    if(matLoc < 0) std::cout << "ERROR with uniform location " << uni << "\n";
+    glUniformMatrix4fv(matLoc, 1, GL_FALSE, mat.mat);
+}
+
 GLint Shader::getAttribLoc(const char *att){
     GLint loc = glGetAttribLocation(ID, att);
     if(loc == -1) std::cout << "ERROR with attribute location " << att << "\n";
