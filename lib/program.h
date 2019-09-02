@@ -21,6 +21,7 @@ public:
 	void setInt(const char *, int);
 	void setVec3f(const char *, float, float, float);
 	void setVec3f(const char *, glm::vec3);
+	void setVec3f(const char *, Vec3);
 	void setMat4(const char *, glm::mat4);
 	void setMat4(const char *, Mat4);
 	GLint getAttribLoc(const char *);

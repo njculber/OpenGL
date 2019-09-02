@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include "../lib/stb_image.h"
 #include "../lib/program.h"
 #include "../lib/lib.h"
@@ -16,7 +17,8 @@
 GLFWwindow *window;
 #define screenWidth 640.0f
 #define screenHeight 480.0f
-Camera camera(glm::vec3(0.0, 0.0, 5.0), glm::vec3(3.0, 0.0, 0.0));
+// Camera camera(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0));
+Camera myCam(Vec3(0.0, 0.0, 5.0), Vec3(0.0, 0.0, 0.0));
 
 int firstmouse = 1;
 float lastX = screenWidth / 2.0;
@@ -30,16 +32,16 @@ void processInput(GLFWwindow* window){
         glfwSetWindowShouldClose(window, true);
     }
     if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){ 
-        camera.processKeyboard(1);
+        myCam.processKeyboard(1);
     }
     if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){ 
-        camera.processKeyboard(2);
+        myCam.processKeyboard(2);
     }
     if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
-        camera.processKeyboard(3);
+        myCam.processKeyboard(3);
     }
     if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
-        camera.processKeyboard(4);
+        myCam.processKeyboard(4);
     }
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
         GLint polygonMode;
@@ -65,7 +67,9 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos){
     lastX = xPos;
     lastY = yPos;
 
-    camera.processMouse(x_offset, y_offset);
+    myCam.processMouse(x_offset, y_offset);
+    // myCam.processMouse(0, 0);
+
 }
 
 void scroll_callback(GLFWwindow* window, double xOff, double yOff){
@@ -250,10 +254,10 @@ int main(){
     shader.setVec3f("light.specular", 1.0f, 1.0f, 1.0f);
 
     // obsidian material
-    shader.setVec3f("mat.ambient", 0.05375f, 0.05f, 0.06625f);
-    shader.setVec3f("mat.diffuse", 0.18275f, 0.17, 0.22525f);
-    shader.setVec3f("mat.specular", 0.332741f, 0.328634f, 0.346435f);
-    shader.setFloat("mat.shininess", 0.3f);
+    shader.setVec3f("mat.ambient", 0.05375f, 0.5f, 0.06625f);
+    shader.setVec3f("mat.diffuse", 0.028275f, 0.17, 0.22525f);
+    shader.setVec3f("mat.specular", 0.1732741f, 0.0328634f, 0.346435f);
+    shader.setFloat("mat.shininess", 0.2f);
     /*
         For more materials, visit:
         http://devernay.free.fr/cours/opengl/materials.html
@@ -263,7 +267,7 @@ int main(){
     *                                 DISPLAY                                  *
     ****************************************************************************/
 
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST); 
 
     while(!glfwWindowShouldClose(window)){
         // render
@@ -273,8 +277,8 @@ int main(){
         // input
         processInput(window);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = camera.getView();
+        Mat4 model;
+        Mat4 view = myCam.getView();
         glm::mat4 projection = glm::perspective(glm::radians(fov), 
                                     screenWidth/screenHeight, 
                                     0.1f, 
@@ -282,21 +286,25 @@ int main(){
 
         // draw color cube
         shader.use();
-        glm::vec3 lightPos(0.2f, 1.2f, 2.0f);
+        glm::vec3 lightPos(0.6f, 0.6f, 1.2f);
         shader.setVec3f("light.pos", lightPos);
-        shader.setVec3f("eye", camera.cameraPos);
-        shader.setMat4("model", model);
+        shader.setVec3f("eye", myCam.position);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
         glBindVertexArray(cube.VAO);
+
+        model.toIdentity();
+        model = Mat4::rotate(model, glfwGetTime(), Vec3(2.0,1.3,1.8));
+        shader.setMat4("model", model);
         glDrawElements(GL_TRIANGLES, cube.num_vertices, GL_UNSIGNED_INT, 0);
+
 
         // draw light
         shader2.use();
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f));
-        shader2.setMat4("model", model);
+        glm::mat4 model1 = glm::mat4(1.0f);
+        model1 = glm::translate(model1, lightPos);
+        model1 = glm::scale(model1, glm::vec3(0.2f));
+        shader2.setMat4("model", model1);
         shader2.setMat4("view", view);
         shader2.setMat4("projection", projection);
         glBindVertexArray(light_cube.VAO);

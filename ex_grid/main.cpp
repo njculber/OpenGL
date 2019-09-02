@@ -14,9 +14,9 @@
 #include "../lib/neil_math.h"
 
 GLFWwindow *window;
-#define screenWidth 1920.0f
-#define screenHeight 1080.0f
-Camera camera(glm::vec3(0.0, 0.0, 5.0), glm::vec3(3.0, 0.0, 0.0));
+#define screenWidth 640.0f
+#define screenHeight 480.0f
+Camera camera(Vec3(0.0, 0.0, 5.0), Vec3(3.0, 0.0, 0.0));
 
 int firstmouse = 1;
 float lastX = screenWidth / 2.0;
@@ -167,9 +167,10 @@ int main(){
         // input
         processInput(window);
 
-        // glm::mat4 model = glm::mat4(1.0f);
         Mat4 model = Mat4(1.0f);
-        glm::mat4 view = camera.getView();
+        model = Mat4::translate(model, Vec3(20.0, 15.0, 0.0));
+        model = Mat4::rotate(model, glfwGetTime() * 0.05, Vec3(0.0, 0.0, 1.0));
+        Mat4 view = camera.getView();
         glm::mat4 projection = glm::perspective(glm::radians(fov), 
                                     screenWidth/screenHeight, 
                                     0.1f, 
