@@ -30,12 +30,14 @@ public:
 	void show();
 	void showInverted();
 	Mat4 operator * (Mat4);
-	static Mat4 rotate(Mat4, float, Vec3);
-	static Mat4 translate(Mat4, Vec3);
-	static Mat4 scale(Mat4, Vec3);
-	static Mat4 lookAt(Vec3, Vec3, Vec3);
-	// static Mat4 perspective();
 };
+
+Mat4 rotate(Mat4, float, Vec3);
+Mat4 translate(Mat4, Vec3);
+Mat4 scale(Mat4, Vec3);
+Mat4 lookAt(Vec3, Vec3, Vec3);
+Mat4 perspective(float, float, float, float);
+float radians(float angle);
 
 
 

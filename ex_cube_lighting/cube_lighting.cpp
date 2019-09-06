@@ -3,11 +3,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <cmath>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/string_cast.hpp>
 #include "../lib/stb_image.h"
 #include "../lib/program.h"
 #include "../lib/lib.h"
@@ -17,7 +12,6 @@
 GLFWwindow *window;
 #define screenWidth 640.0f
 #define screenHeight 480.0f
-// Camera camera(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0));
 Camera myCam(Vec3(0.0, 0.0, 5.0), Vec3(0.0, 0.0, 0.0));
 
 int firstmouse = 1;
@@ -50,8 +44,7 @@ void processInput(GLFWwindow* window){
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         else
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    } 
-    
+    }  
 }
 
 void mouse_callback(GLFWwindow* window, double xPos, double yPos){
@@ -68,8 +61,6 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos){
     lastY = yPos;
 
     myCam.processMouse(x_offset, y_offset);
-    // myCam.processMouse(0, 0);
-
 }
 
 void scroll_callback(GLFWwindow* window, double xOff, double yOff){
@@ -279,34 +270,33 @@ int main(){
 
         Mat4 model;
         Mat4 view = myCam.getView();
-        glm::mat4 projection = glm::perspective(glm::radians(fov), 
-                                    screenWidth/screenHeight, 
-                                    0.1f, 
-                                    100.0f);
+        Mat4 proj = perspective(fov, screenWidth/screenHeight, 0.1, 100.0f);
+        Mat4 mvp;
 
         // draw color cube
         shader.use();
-        glm::vec3 lightPos(0.6f, 0.6f, 1.2f);
+        Vec3 lightPos(2.6f, 1.9f, 5.2f);
         shader.setVec3f("light.pos", lightPos);
         shader.setVec3f("eye", myCam.position);
-        shader.setMat4("view", view);
-        shader.setMat4("projection", projection);
         glBindVertexArray(cube.VAO);
 
         model.toIdentity();
-        model = Mat4::rotate(model, glfwGetTime(), Vec3(2.0,1.3,1.8));
+        model = rotate(model, glfwGetTime(), Vec3(2.0,1.3,1.8));
+        model = translate(model, Vec3(0.0, 0.0, -1.4));
+        mvp = proj * view * model;
         shader.setMat4("model", model);
+        shader.setMat4("mvp", mvp);
         glDrawElements(GL_TRIANGLES, cube.num_vertices, GL_UNSIGNED_INT, 0);
 
 
         // draw light
         shader2.use();
-        glm::mat4 model1 = glm::mat4(1.0f);
-        model1 = glm::translate(model1, lightPos);
-        model1 = glm::scale(model1, glm::vec3(0.2f));
-        shader2.setMat4("model", model1);
-        shader2.setMat4("view", view);
-        shader2.setMat4("projection", projection);
+        Mat4 model1(1.0f);
+        model1 = translate(model1, lightPos);
+        model1 = scale(model1, Vec3(0.2f, 0.2f, 0.2f));
+
+        mvp = proj * view * model1;
+        shader2.setMat4("mvp", mvp);
         glBindVertexArray(light_cube.VAO);
         glDrawElements(GL_TRIANGLES, light_cube.num_vertices, GL_UNSIGNED_INT, 0);
 

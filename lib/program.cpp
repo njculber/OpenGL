@@ -1,7 +1,6 @@
 #include "program.h"
 
 Shader::Shader(const char* vertPath, const char* fragPath){
-
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::ifstream vertShaderFile;
@@ -96,22 +95,10 @@ void Shader::setVec3f(const char *uni, float v1, float v2, float v3){
 	glUniform3f(loc, v1, v2, v3);
 }
 
-void Shader::setVec3f(const char *uni, glm::vec3 vec){
-    int loc = glGetUniformLocation(ID, uni);
-    if(loc == -1) std::cout << "ERROR with uniform location " << uni << "\n";
-    glUniform3f(loc, vec.x, vec.y, vec.z);
-}
-
 void Shader::setVec3f(const char *uni, Vec3 vec){
     int loc = glGetUniformLocation(ID, uni);
     if(loc == -1) std::cout << "ERROR with uniform location " << uni << "\n";
     glUniform3f(loc, vec.x, vec.y, vec.z);
-}
-
-void Shader::setMat4(const char *uni, glm::mat4 mat){
-    unsigned int matLoc = glGetUniformLocation(ID, uni);
-    if(matLoc < 0) std::cout << "ERROR with uniform location " << uni << "\n";
-    glUniformMatrix4fv(matLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 void Shader::setMat4(const char *uni, Mat4 mat){

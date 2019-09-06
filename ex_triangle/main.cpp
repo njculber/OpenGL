@@ -3,19 +3,16 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <cmath>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include "../lib/stb_image.h"
 #include "../lib/program.h"
 #include "../lib/lib.h"
 #include "../lib/camera.h"
+#include "../lib/neil_math.h"
 
 GLFWwindow *window;
 #define screenWidth 1920.0f
 #define screenHeight 1080.0f
-Camera camera(glm::vec3(0.0, 0.0, 5.0), glm::vec3(3.0, 0.0, 0.0));
+Camera camera(Vec3(0.0, 0.0, 5.0), Vec3(3.0, 0.0, 0.0));
 
 int firstmouse = 1;
 float lastX = screenWidth / 2.0;
@@ -75,9 +72,9 @@ void init_grid(neil_geometry *geom, Shader prog){
     glGenVertexArrays(1, &geom->VAO);
     prog.use();
 
-    int rows = 100;
-    int cols = 100;
-    float squareSize = 0.5f;
+    const int rows = 400;
+    const int cols = 400;
+    float squareSize = 0.001f;
     int arrIndex;
 
     // set up vertices
@@ -142,17 +139,15 @@ int main(){
         // input
         processInput(window);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = camera.getView();
-        glm::mat4 projection = glm::perspective(glm::radians(fov), 
+        Mat4 model(1.0f);
+        Mat4 view = camera.getView();
+        Mat4 projection = perspective(fov, 
                                     screenWidth/screenHeight, 
                                     0.1f, 
                                     100.0f);
         // draw
         shader.use();
-        shader.setMat4("model", model);
-        shader.setMat4("view", view);
-        shader.setMat4("projection", projection);
+        shader.setMat4("mvp", projection * view * model);
 
         glBindVertexArray(grid.VAO);
         glDrawElements(GL_TRIANGLES, grid.num_vertices, GL_UNSIGNED_INT, 0);

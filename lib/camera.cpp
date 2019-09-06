@@ -3,7 +3,7 @@
 Camera::Camera(){
     cameraSpeed = 0.05;
     position = Vec3(0.0, 0.0, 3.0);
-    target = Vec3(0.0, 0.0, -1.0);
+    target = Vec3(0.0, 0.0, 0.0);
     cam_up = Vec3(0.0, 1.0, 0.0);
     world_up = Vec3(0.0, 1.0, 0.0);
     yaw = -90.0f;
@@ -23,7 +23,7 @@ Camera::Camera(Vec3 pos, Vec3 target_in){
 }
 
 Mat4 Camera::getView(){
-    return Mat4::lookAt(position, position + target, cam_up);
+    return lookAt(position, position + target, cam_up);
 }
 
 void Camera::processMouse(float x_off, float y_off){
@@ -44,15 +44,13 @@ void Camera::processKeyboard(int val){
 }
 
 void Camera::updateCamera(){
-	Vec3 front;
     float yawRad = (yaw * M_PI) / 180.0f;
     float pitchRad = (pitch * M_PI) / 180.0f;
 
-    front.x = cos(yawRad) * cos(pitchRad);
-    front.y = sin(pitchRad);
-    front.z = sin(yawRad) * cos(pitchRad);
-    front.normalize();
-    target = front;
+    target.x = cos(yawRad) * cos(pitchRad);
+    target.y = sin(pitchRad);
+    target.z = sin(yawRad) * cos(pitchRad);
+    target.normalize();
 
     cam_right = target.cross(world_up);
     cam_right.normalize();

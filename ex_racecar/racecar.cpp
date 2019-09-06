@@ -4,9 +4,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <cmath>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include "../lib/stb_image.h"
 #include "../lib/program.h"
 #include "../lib/lib.h"
@@ -16,7 +13,7 @@
 GLFWwindow *window;
 #define screenWidth 640.0f
 #define screenHeight 480.0f
-Camera camera(glm::vec3(0.0, 0.0, 5.0), glm::vec3(3.0, 0.0, 0.0));
+Camera camera(Vec3(0.0, 0.0, 5.0), Vec3(3.0, 0.0, 0.0));
 
 int firstmouse = 1;
 float lastX = screenWidth / 2.0;
@@ -340,17 +337,12 @@ int main(){
         // input
         processInput(window);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = camera.getView();
-        glm::mat4 projection = glm::perspective(glm::radians(fov), 
+        Mat4 model(1.0f);
+        Mat4 view = camera.getView();
+        Mat4 projection = perspective(fov, 
                                     screenWidth/screenHeight, 
                                     0.1f, 
                                     100.0f);
-
-        // model = glm::rotate(model, glm::radians((float)glfwGetTime()) * 70.0f, glm::vec3(0.2, 1.0, 0.3));
-        // model = glm::translate(model, glm::vec3(0.0, 0.0, 0.0));
-
-        // model = glm::scale(model, glm::vec3(0.2, 0.2, 0.2));
         shader.use();
         shader.setMat4("model", model);
         shader.setMat4("view", view);
@@ -359,15 +351,15 @@ int main(){
         glBindVertexArray(cube.VAO);
         glDrawElements(GL_TRIANGLES, cube.num_vertices, GL_UNSIGNED_INT, 0);
 
-        model = glm::translate(model, glm::vec3(1.0, 0.0, 0.0));
+        model = translate(model, Vec3(1.0, 0.0, 0.0));
         shader.setMat4("model", model);
         glDrawElements(GL_TRIANGLES, cube.num_vertices, GL_UNSIGNED_INT, 0);
 
-        model = glm::translate(model, glm::vec3(-2.0, 0.0, 0.0));
+        model = translate(model, Vec3(-2.0, 0.0, 0.0));
         shader.setMat4("model", model);
         glDrawElements(GL_TRIANGLES, cube.num_vertices, GL_UNSIGNED_INT, 0);
 
-        model = glm::translate(model, glm::vec3(1.0, 1.0, 0.0));
+        model = translate(model, Vec3(1.0, 1.0, 0.0));
         shader.setMat4("model", model);
         glDrawElements(GL_TRIANGLES, cube.num_vertices, GL_UNSIGNED_INT, 0);
 
@@ -377,43 +369,41 @@ int main(){
         shader2.setMat4("projection", projection);
 
         // front wheels
-        model = glm::mat4(1.0f);
-        // model = glm::scale(model, glm::vec3(0.2, 0.2, 0.2));
-        model = glm::translate(model, glm::vec3(-1.0, -0.4, 0.6));
-        model = glm::rotate(model, glm::radians((float)glfwGetTime()) * 60.0f * rotating, glm::vec3(0.0, 0.0, 1.0));
-        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-        model = glm::scale(model, glm::vec3(0.7, 0.25, 0.7));
+        model.toIdentity();
+        model = scale(model, Vec3(0.7, 0.25, 0.7));
+        model = rotate(model, radians(90.0f), Vec3(1.0, 0.0, 0.0));
+        model = rotate(model, glfwGetTime() * rotating, Vec3(0.0, 0.0, 1.0));
+        model = translate(model, Vec3(-1.0, -0.4, 0.6));
         shader2.setMat4("model", model);
         glBindVertexArray(cylinder.VAO);
         glDrawElements(GL_TRIANGLES, cylinder.num_vertices, GL_UNSIGNED_INT, 0);
 
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-1.0, -0.4, -0.6));
-        model = glm::rotate(model, glm::radians((float)glfwGetTime()) * 60.0f * rotating, glm::vec3(0.0, 0.0, 1.0));
-        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-        model = glm::scale(model, glm::vec3(0.7, 0.25, 0.7));
+        model.toIdentity();
+        model = scale(model, Vec3(0.7, 0.25, 0.7));
+        model = rotate(model, radians(90.0f), Vec3(1.0, 0.0, 0.0));
+        model = rotate(model, glfwGetTime() * rotating, Vec3(0.0, 0.0, 1.0));
+        model = translate(model, Vec3(-1.0, -0.4, -0.6));
         shader2.setMat4("model", model);
         glBindVertexArray(cylinder.VAO);
         glDrawElements(GL_TRIANGLES, cylinder.num_vertices, GL_UNSIGNED_INT, 0);
 
         // back wheels
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(1.0, -0.4, 0.6));
-
-        model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0, 1.0, 0.0));
-        model = glm::rotate(model, glm::radians((float)glfwGetTime()) * 60.0f * rotating, glm::vec3(0.0, 0.0, 1.0));
-        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-        model = glm::scale(model, glm::vec3(0.7, 0.25, 0.7));
+        model.toIdentity();
+        model = scale(model, Vec3(0.7, 0.25, 0.7));
+        model = rotate(model, angle, Vec3(0.0, 1.0, 0.0));
+        model = rotate(model, radians(90.0f), Vec3(1.0, 0.0, 0.0));
+        model = rotate(model, glfwGetTime() * rotating, Vec3(0.0, 0.0, 1.0));
+        model = translate(model, Vec3(1.0, -0.4, 0.6));
         shader2.setMat4("model", model);
         glBindVertexArray(cylinder.VAO);
         glDrawElements(GL_TRIANGLES, cylinder.num_vertices, GL_UNSIGNED_INT, 0);
 
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(1.0, -0.4, -0.6));
-        model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0, 1.0, 0.0));
-        model = glm::rotate(model, glm::radians((float)glfwGetTime()) * 60.0f * rotating, glm::vec3(0.0, 0.0, 1.0));
-        model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
-        model = glm::scale(model, glm::vec3(0.7, 0.25, 0.7));
+        model.toIdentity();
+        model = scale(model, Vec3(0.7, 0.25, 0.7));
+        model = rotate(model, angle, Vec3(0.0, 1.0, 0.0));
+        model = rotate(model, radians(90.0f), Vec3(1.0, 0.0, 0.0));
+        model = rotate(model, glfwGetTime() * rotating, Vec3(0.0, 0.0, 1.0));
+        model = translate(model, Vec3(1.0, -0.4, -0.6));
         shader2.setMat4("model", model);
         glBindVertexArray(cylinder.VAO);
         glDrawElements(GL_TRIANGLES, cylinder.num_vertices, GL_UNSIGNED_INT, 0);

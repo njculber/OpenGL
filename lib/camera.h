@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 #include <GLFW/glfw3.h>
+#include <iostream>
 #include "neil_math.h"
 
 class Camera{

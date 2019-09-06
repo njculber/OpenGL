@@ -1,7 +1,6 @@
 #include "neil_math.h"
 #include <iostream>
 #include <iomanip>
-#include <cmath>
 
 
 /************************* VECTOR **************************/
@@ -112,10 +111,13 @@ Mat4 Mat4::operator * (Mat4 mat_in){
 	return m;
 }
 
-Mat4 Mat4::rotate(Mat4 m, float angle, Vec3 vec){
+float radians(float angle){
+	return (angle * M_PI) / 180.0f;
+}
+
+Mat4 rotate(Mat4 m, float angle, Vec3 vec){
 	Mat4 m1(1.0f);
 	float n = 1-cos(angle);
-	vec.normalize();
 	float x = vec.x / vec.magnitude();
 	float y = vec.y / vec.magnitude();
 	float z = vec.z / vec.magnitude();
@@ -135,7 +137,7 @@ Mat4 Mat4::rotate(Mat4 m, float angle, Vec3 vec){
 	return m1 * m;
 }
 
-Mat4 Mat4::translate(Mat4 m, Vec3 vec){	
+Mat4 translate(Mat4 m, Vec3 vec){	
 	Mat4 m1(1.0f);
 	m1.mat[12] += vec.x;
 	m1.mat[13] += vec.y;
@@ -143,7 +145,7 @@ Mat4 Mat4::translate(Mat4 m, Vec3 vec){
 	return m1 * m;
 }
 
-Mat4 Mat4::scale(Mat4 m, Vec3 vec){
+Mat4 scale(Mat4 m, Vec3 vec){
 	Mat4 m1(1.0f);
 	m1.mat[0] *= vec.x;
 	m1.mat[5] *= vec.y;
@@ -151,16 +153,16 @@ Mat4 Mat4::scale(Mat4 m, Vec3 vec){
 	return m1 * m;
 }
 
-Mat4 Mat4::lookAt(Vec3 position, Vec3 target, Vec3 up){
+Mat4 lookAt(Vec3 position, Vec3 target, Vec3 up){
+	// calculate direction, right, and up vectors
 	Vec3 direction = position - target;
-	direction.normalize();
-
 	Vec3 right = up.cross(direction);
-	right.normalize();
-
 	Vec3 new_up = direction.cross(right);
+	right.normalize();
+	direction.normalize();
 	new_up.normalize();
 
+	// create rotation matrix
 	Mat4 rm;
 	rm.toIdentity();
 
@@ -174,6 +176,7 @@ Mat4 Mat4::lookAt(Vec3 position, Vec3 target, Vec3 up){
 	rm.mat[6] = direction.y;
 	rm.mat[10] = direction.z;
 
+	// create translation matrix
 	Mat4 tm;
 	tm.toIdentity();
 
@@ -181,7 +184,28 @@ Mat4 Mat4::lookAt(Vec3 position, Vec3 target, Vec3 up){
 	tm.mat[13] = -position.y;
 	tm.mat[14] = -position.z;
 
+	// return rotation * translation matrix
 	return rm * tm;
+}
+
+Mat4 perspective(float fov, float aspectRatio, float near, float far){ 
+	// calculate desired boundaries
+    float scale = tan(fov * 0.5 * M_PI / 180) * near; 
+    float right = aspectRatio * scale; 
+    float left = -right; 
+    float top = scale;
+    float bottom = -top; 
+
+    // set up perspective matrix
+	Mat4 m(0.0f);
+    m.mat[0] = near / ((right-left)/2);
+	m.mat[5] = near / ((top-bottom)/2);
+	m.mat[10] = -(far+near) / (far-near);
+	m.mat[11] = -1.0f;
+	m.mat[14] = -(2 * (far*near)) / (far-near);
+	m.mat[15] = 0.0f;
+	
+	return m;
 }
 
 

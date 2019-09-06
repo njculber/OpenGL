@@ -76,8 +76,8 @@ void init_grid(neil_geometry *geom, Shader prog){
     glGenVertexArrays(1, &geom->VAO);
     prog.use();
 
-    const int rows = 200;
-    const int cols = 400;
+    const int rows = 240;
+    const int cols = 480;
     float squareSize = 0.1f;
     int arrIndex;
 
@@ -168,18 +168,16 @@ int main(){
         processInput(window);
 
         Mat4 model = Mat4(1.0f);
-        model = Mat4::translate(model, Vec3(20.0, 15.0, 0.0));
-        model = Mat4::rotate(model, glfwGetTime() * 0.05, Vec3(0.0, 0.0, 1.0));
+        model = rotate(model, glfwGetTime() * 0.05, Vec3(0.0, 0.0, 1.0));
+        model = translate(model, Vec3(20.0, 15.0, 0.0));
         Mat4 view = camera.getView();
-        glm::mat4 projection = glm::perspective(glm::radians(fov), 
+        Mat4 projection = perspective(fov, 
                                     screenWidth/screenHeight, 
                                     0.1f, 
                                     100.0f);
         // draw
         shader.use();
-        shader.setMat4("model", model);
-        shader.setMat4("view", view);
-        shader.setMat4("projection", projection);
+        shader.setMat4("mvp", projection * view * model);
 
         glBindVertexArray(grid.VAO);
         glDrawElements(GL_TRIANGLES, grid.num_vertices, GL_UNSIGNED_INT, 0);
